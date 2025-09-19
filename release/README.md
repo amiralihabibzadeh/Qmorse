@@ -1,6 +1,6 @@
 # Qmorse
 
-Hmorse is a small Python library for **encoding and decoding Binary Morse code**.  
+Qmorse is a small Python library for **encoding and decoding Binary Morse code**.  
 It allows you to quickly convert text to Morse code and vice versa.
 
 ## Features
