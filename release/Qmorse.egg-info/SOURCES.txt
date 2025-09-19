@@ -1,0 +1,10 @@
+LICENSE
+README.md
+pyproject.toml
+setup.py
+Qmorse/__init__.py
+Qmorse/core.py
+Qmorse.egg-info/PKG-INFO
+Qmorse.egg-info/SOURCES.txt
+Qmorse.egg-info/dependency_links.txt
+Qmorse.egg-info/top_level.txt
