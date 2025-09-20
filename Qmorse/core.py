@@ -1,4 +1,12 @@
 class bimorse:
+    """
+    A class to encode and decode text into "bimorse" (a Morse-like binary encoding) 
+    and save/read both text and bimorse files.
+
+    Attributes:
+        translate (dict): Maps bimorse sequences (like '01', '1000') to characters.
+        encode (dict): Reverse mapping from characters to bimorse sequences.
+    """
     translate = {
         '01': 'A','1000': 'B','1010': 'C','100': 'D',
         '0': 'E','0010': 'F','110': 'G','0000': 'H',
@@ -22,20 +30,45 @@ class bimorse:
 
     @staticmethod
     def read_text(path):
+        """
+        Read a text file and normalize line endings.
+
+        Args:
+            path (str): Path to a .txt file.
+
+        Returns:
+            str: Content of the text file with '\n' line endings.
+
+        Raises:
+            ValueError: If the file does not end with '.txt'.
+        """
         if not path.endswith('.txt'):
             raise ValueError('File is not text')
-        with open(path, 'r', encoding='utf-8') as f:
-            content = f.read()
+        with open(path, 'r', encoding='utf-8') as q:
+            content = q.read()
         content = content.replace('\r\n', '\n').replace('\r', '\n')
         return content
 
     @staticmethod
     def read_bimorse(bimorse_path):
+        """
+        Read a bimorse file and validate its content.
+
+        Args:
+            bimorse_path (str): Path to a .bimorse file.
+
+        Returns:
+            str: Content of the bimorse file.
+
+        Raises:
+            ValueError: If the file contains invalid characters.
+            FileNotFoundError: If the file does not exist.
+        """
         if not bimorse_path.endswith('.bimorse'):
             raise ValueError('File is not bimorse')
         try:
-            with open(bimorse_path, 'r', encoding='utf-8') as f:
-                content = f.read()
+            with open(bimorse_path, 'r', encoding='utf-8') as q:
+                content = q.read()
         except FileNotFoundError:
             raise FileNotFoundError(f'File at {bimorse_path} does not exist')
         for ch in content:
@@ -45,6 +78,15 @@ class bimorse:
     
     @staticmethod
     def to_bimorse(text):
+        """
+        Convert normal text to bimorse encoding.
+
+        Args:
+            text (str): Text to convert.
+
+        Returns:
+            str: Bimorse encoded string.
+        """
         text = text.replace('    ', '\t')
         result = []
         for ch in text:
@@ -66,6 +108,15 @@ class bimorse:
 
     @staticmethod
     def to_text(bimorse_content):
+        """
+        Convert bimorse content back to normal text.
+
+        Args:
+            bimorse_content (str): Bimorse encoded string.
+
+        Returns:
+            str: Decoded normal text.
+        """
         result = []
         i = 0
         seq = ''
@@ -85,7 +136,7 @@ class bimorse:
                     result.append(' ')
                 elif dots == 3:
                     result.append('    ')
-                elif dots >= 4:
+                else :
                     n = dots // 4
                     result.append(n*'\n')
             else:
@@ -93,4 +144,48 @@ class bimorse:
         if seq:
             result.append(bimorse.translate.get(seq, '-un-'))
         return ''.join(result)
+        
+    @staticmethod
+    def save_file(var: str, filename: str) -> None:
+        """
+        Save a string `var` to a file, either as text or bimorse.
+    
+        Args:
+            var (str): The string to save. Can be:
+                - Plain text (like 'Hello world')
+                - Bimorse string (like '01.0.1...')
+            filename (str): The target filename. Must end with:
+                - '.txt' to save as plain text
+                - '.bimorse' to save as bimorse
+    
+        Returns:
+            None
+    
+        Raises:
+            ValueError: If file extension is unsupported or content cannot be converted.
+    
+        Examples:
+            >>> bimorse.save_file('Hello', 'hello.bimorse')
+            >>> bimorse.save_file('01.0.1', 'output.txt')
+        """
+        var_type = 'bimorse' if all(ch in '01.' for ch in var) else 'text'
+
+        if var_type == 'bimorse' and filename.endswith('.bimorse'):
+            to_write = var
+        elif var_type == 'bimorse' and filename.endswith('.txt'):
+            to_write = to_text(var)  
+        elif var_type == 'text' and filename.endswith('.bimorse'):
+            to_write = to_bimorse(var) 
+        elif var_type == 'text' and filename.endswith('.txt'):
+            to_write = var
+        else:
+            raise ValueError("File extension must be .txt or .bimorse")
+
+        with open(filename, 'w', encoding='utf-8') as q:
+            q.write(to_write)
+
+        
+        
+    
+        
 
