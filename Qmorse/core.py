@@ -173,9 +173,9 @@ class bimorse:
         if var_type == 'bimorse' and filename.endswith('.bimorse'):
             to_write = var
         elif var_type == 'bimorse' and filename.endswith('.txt'):
-            to_write = to_text(var)  
+            to_write = bimorse.to_text(var)  
         elif var_type == 'text' and filename.endswith('.bimorse'):
-            to_write = to_bimorse(var) 
+            to_write = bimorse.to_bimorse(var) 
         elif var_type == 'text' and filename.endswith('.txt'):
             to_write = var
         else:

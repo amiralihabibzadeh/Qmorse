@@ -7,7 +7,7 @@ name = "Qmorse"
 version = "1.0.0"
 description = "A lightweight Morse-like encoder/decoder library for Python"
 authors = [
-  { name = "Hobab", email = "b66669420@gmail.com" }
+  { name = "amiralihabibzadeh", email = "b66669420@gmail.com" }
 ]
 readme = "README.md"
 license = { file = "LICENSE" }
