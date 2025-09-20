@@ -1,17 +1,28 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "Qmorse"
 version = "1.0.0"
-description = "A custom Morse-like encoder/decoder for real use"
+description = "A lightweight Morse-like encoder/decoder library for Python"
 authors = [
   { name = "Hobab", email = "b66669420@gmail.com" }
 ]
 readme = "README.md"
 license = { file = "LICENSE" }
 requires-python = ">=3.7"
+keywords = ["morse", "encoding", "decoding", "binary", "python"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Communications :: Morse Code",
+    "Topic :: Software Development :: Libraries :: Python Modules"
+]
 
 [project.urls]
 Homepage = "https://github.com/amiralihabibzadeh/Qmorse"
+Repository = "https://github.com/amiralihabibzadeh/Qmorse"
+Bug Tracker = "https://github.com/amiralihabibzadeh/Qmorse/issues"
+
