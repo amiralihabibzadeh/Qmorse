@@ -1,17 +1,25 @@
 # Qmorse
 
-Qmorse is a small Python library for **encoding and decoding Binary Morse code**. 
-It allows you to quickly convert text to Morse code and vice versa.
+**Qmorse** is a lightweight Python library for **encoding and decoding text to Binary Morse code**.  
+It is simple, fast, and easy to integrate into any Python project.
+
+Binary Morse code represents Morse symbols using binary digits (0s and 1s), making it useful for digital communications, simulations, and learning purposes.
+
+---
 
 ## Features
 
-- Convert text to Morse code.
-- Convert Morse code back to text.
-- Simple and lightweight.
+- Encode text into binary Morse code.  
+- Decode binary Morse code back into readable text.  
+- Lightweight and dependency-free.  
+- Easy-to-use API for beginners and advanced users.
+
+---
 
 ## Installation
 
-You can install Qmorse via pip:
+Install Qmorse using `pip`:
 
 ```bash
 pip install Qmorse
+
