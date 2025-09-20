@@ -6,7 +6,7 @@ long_description = (this_directory / "README.md").read_text()
 
 setup(
     name="Qmorse",
-    version="0.9.4",
+    version="1.0.0",
     author="Hobab",
     author_email="b66669420@gmail.com",
     description="A mini library for encoding and decoding Binary Morse code",
