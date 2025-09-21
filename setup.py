@@ -27,6 +27,5 @@ setup(
     ],
     python_requires=">=3.7",
     install_requires=[],
-    include_package_data=True,
     keywords="morse binary encoding decoding python",
 )

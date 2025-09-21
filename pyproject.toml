@@ -24,5 +24,4 @@ classifiers = [
 [project.urls]
 Homepage = "https://github.com/amiralihabibzadeh/Qmorse"
 Repository = "https://github.com/amiralihabibzadeh/Qmorse"
-Bug Tracker = "https://github.com/amiralihabibzadeh/Qmorse/issues"
-
+Bug_Tracker = "https://github.com/amiralihabibzadeh/Qmorse/issues"
