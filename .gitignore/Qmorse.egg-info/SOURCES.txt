@@ -1,7 +1,0 @@
-LICENSE
-README.md
-setup.py
-Qmorse.egg-info/PKG-INFO
-Qmorse.egg-info/SOURCES.txt
-Qmorse.egg-info/dependency_links.txt
-Qmorse.egg-info/top_level.txt
