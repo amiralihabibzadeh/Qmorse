@@ -1,8 +1,3 @@
-import wave
-import struct
-from pathlib import Path
-import importlib.resources as pkg_resources
-import core 
 class bimorse:
     """
     A class to encode and decode text into "bimorse" (a Morse-like binary encoding) 
@@ -188,64 +183,3 @@ class bimorse:
 
         with open(filename, 'w', encoding='utf-8') as q:
             q.write(to_write)
-
-
-class soundmorse:
-    def __init__(self):
-        """
-        Initialize with bundled PCM beeps (short and long)
-        """
-        # Read bundled PCM files
-        self.short_beep = pkg_resources.read_binary(core.sounds, "1_short.pcm")
-        self.long_beep = pkg_resources.read_binary(core.sounds, "1_long.pcm")
-
-    def _append_silence(self, duration_sec, sample_rate=44100):
-        """Generate silence for duration_sec seconds"""
-        n_samples = int(duration_sec * sample_rate)
-        silence = struct.pack("<" + "h"*n_samples, *([0]*n_samples))
-        return silence
-    
-    @staticmethod
-    def bimorse_to_audio(self, bimorse_input:str , output_file="output.wav", sample_rate=44100):
-        """
-        Convert bimorse string or file to WAV audio.
-        """
-        # Read bimorse content if input is a file
-        path = Path(bimorse_input)
-        if path.is_file():
-            bimorse = path.read_text().strip()
-        else:
-            bimorse = bimorse_input.strip()
-
-        audio_data = bytearray()
-        i = 0
-        while i < len(bimorse):
-            char = bimorse[i]
-            if char == "0":
-                audio_data.extend(self.short_beep)
-            elif char == "1":
-                audio_data.extend(self.long_beep)
-
-            # Determine silence after this beep
-            seq_len = 1
-            j = i + 1
-            while j < len(bimorse) and bimorse[j] == char:
-                seq_len += 1
-                j += 1
-
-            if seq_len == 1:
-                silence_sec = 1
-            else:
-                silence_sec = seq_len + 1
-
-            audio_data.extend(self._append_silence(silence_sec, sample_rate))
-            i += seq_len
-
-        # Save WAV file
-        with wave.open(output_file, "wb") as q:
-            q.setnchannels(1)  # mono
-            q.setsampwidth(4)  # 16-bit PCM
-            q.setframerate(sample_rate)
-            q.writeframes(audio_data)
-
-        print(f"Saved audio to {output_file}")

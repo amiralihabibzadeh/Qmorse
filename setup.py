@@ -6,17 +6,17 @@ long_description = (this_directory / "README.md").read_text(encoding="utf-8")
 
 setup(
     name="Qmorse",
-    version="1.1.2",
+    version="1.1.3",
     author="Hobab",
     author_email="b66669420@gmail.com",
     description="A lightweight Morse-like encoder/decoder library for Python",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/amiralihabibzadeh/Qmorse",
-    packages=find_packages(include=["qmorse", "qmorse.*"]),
+    packages=find_packages(include=["Qmorse", "Qmorse.*"]),
     include_package_data=True,
     package_data={
-        "core": ['Beeps/*.pcm']
+        "core": ['sounds/*.pcm']
     },
     classifiers=[
         "Programming Language :: Python :: 3",
