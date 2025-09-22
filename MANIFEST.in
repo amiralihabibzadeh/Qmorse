@@ -1,0 +1,1 @@
+recursive-include Qmorse/sounds *.pcm

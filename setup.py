@@ -15,9 +15,7 @@ setup(
     url="https://github.com/amiralihabibzadeh/Qmorse",
     packages=find_packages(include=["Qmorse", "Qmorse.*"]),
     include_package_data=True,
-    package_data={
-        "core": ['sounds/*.pcm']
-    },
+    package_data={"Qmorse": ["sounds/*.pcm"]},
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
