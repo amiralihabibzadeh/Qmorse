@@ -6,7 +6,7 @@ long_description = (this_directory / "README.md").read_text(encoding="utf-8")
 
 setup(
     name="Qmorse",
-    version="1.1.16",
+    version="1.1.17",
     author="Hobab",
     author_email="b66669420@gmail.com",
     description="A lightweight Morse-like encoder/decoder library for Python",
