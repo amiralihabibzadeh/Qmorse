@@ -25,8 +25,8 @@ class soundmorse:
 
     @staticmethod
     def bimorse_to_audio(
-        bimorse_input: str,
-        output_file="output.wav",
+        input: str,
+        output="output.wav",
         sample_rate=44100,
     short_beep: Optional[bytes] = None,
     long_beep: Optional[bytes] = None
@@ -39,11 +39,11 @@ class soundmorse:
             short_beep = resources.files('Qmorse.sounds').joinpath("1_short.pcm").read_bytes()
             long_beep  = resources.files('Qmorse.sounds').joinpath("1_long.pcm").read_bytes()
 
-        path = Path(bimorse_input)
+        path = Path(input)
         if path.is_file():
             bimorse = ''.join(filter(lambda x: x in "01", path.read_text()))
         else:
-            bimorse = ''.join(filter(lambda x: x in "01", bimorse_input))
+            bimorse = ''.join(filter(lambda x: x in "01", input))
 
         audio_data = bytearray()
         i = 0
@@ -61,10 +61,10 @@ class soundmorse:
             audio_data.extend(soundmorse._append_silence(silence_sec, sample_rate))
             i += seq_len
 
-        with wave.open(output_file, "wb") as w:
+        with wave.open(output, "wb") as w:
             w.setnchannels(1)
             w.setsampwidth(4)
             w.setframerate(sample_rate)
             w.writeframes(audio_data)
 
-        print(f"Saved audio to {output_file}")
+        print(f"Saved audio to {output}")
