@@ -1,43 +1,23 @@
 import wave
-import struct
 from pathlib import Path
 from importlib import resources
-from typing import Optional
+import lameenc  
 
 class soundmorse:
-    """
-    Convert Binary Morse (bimorse) to audio.
-    0 = short beep, 1 = long beep.
-    """
-
-    def __init__(self):
-        """Load bundled PCM beep sounds from the package."""
-        self.short_beep = resources.files('Qmorse.sounds').joinpath("1_short.pcm").read_bytes()
-        self.long_beep  = resources.files('Qmorse.sounds').joinpath("1_long.pcm").read_bytes()
+    short_beep = resources.files('Qmorse.sounds').joinpath("1_short.pcm").read_bytes()
+    long_beep  = resources.files('Qmorse.sounds').joinpath("1_long.pcm").read_bytes()
 
     @staticmethod
-    def _append_silence(duration_sec: float, sample_rate=44100) -> bytes:
-        """Generate silence for given duration in seconds."""
-        n_samples = int(duration_sec * sample_rate)
-        # 32-bit PCM: little-endian signed integers
-        silence = struct.pack("<" + "i"*n_samples, *([0]*n_samples))
-        return silence
+    def _append_silence(duration_sec: float, sample_rate: int) -> bytes:
+        num_samples = int(duration_sec * sample_rate)
+        return b'\x00\x00\x00\x00' * num_samples  
 
     @staticmethod
-    def bimorse_to_audio(
-        input: str,
-        output="output.wav",
-        sample_rate=44100,
-    short_beep: Optional[bytes] = None,
-    long_beep: Optional[bytes] = None
-    ):
-        """
-        Static version: convert bimorse to audio.
-        Will load default PCM beeps if short_beep/long_beep are not provided.
-        """
-        if short_beep is None or long_beep is None:
-            short_beep = resources.files('Qmorse.sounds').joinpath("1_short.pcm").read_bytes()
-            long_beep  = resources.files('Qmorse.sounds').joinpath("1_long.pcm").read_bytes()
+    def _get_silence_duration(seq_len: int) -> float:
+        return {1: 0.5, 2: 1.0, 3: 1.5}.get(seq_len, 2.0)
+
+    @staticmethod
+    def bimorse_to_audio(input: str, output="output.wav", sample_rate=44100):
 
         path = Path(input)
         if path.is_file():
@@ -49,7 +29,7 @@ class soundmorse:
         i = 0
         while i < len(bimorse):
             char = bimorse[i]
-            audio_data.extend(short_beep if char == "0" else long_beep)
+            audio_data.extend(soundmorse.short_beep if char == "0" else soundmorse.long_beep)
 
             seq_len = 1
             j = i + 1
@@ -57,14 +37,32 @@ class soundmorse:
                 seq_len += 1
                 j += 1
 
-            silence_sec = 1 if seq_len == 1 else seq_len + 1
+            silence_sec = soundmorse._get_silence_duration(seq_len)
             audio_data.extend(soundmorse._append_silence(silence_sec, sample_rate))
             i += seq_len
 
-        with wave.open(output, "wb") as w:
-            w.setnchannels(1)
-            w.setsampwidth(4)
-            w.setframerate(sample_rate)
-            w.writeframes(audio_data)
+        output_path = Path(output)
+        ext = output_path.suffix.lower().replace('.', '')
 
-        print(f"Saved audio to {output}")
+        if ext == "wav":
+            with wave.open(str(output_path), "wb") as w:
+                w.setnchannels(1)
+                w.setsampwidth(4) 
+                w.setframerate(sample_rate)
+                w.writeframes(audio_data)
+        elif ext == "mp3":
+            encoder = lameenc.Encoder()
+            encoder.set_bit_rate(192)
+            encoder.set_in_sample_rate(sample_rate)
+            encoder.set_channels(1)
+            encoder.set_quality(2) 
+
+            mp3_data = encoder.encode(bytes(audio_data))
+            mp3_data += encoder.flush()
+
+            with open(output_path, "wb") as f:
+                f.write(mp3_data)
+        else:
+            raise ValueError("Unsupported format. Only WAV and MP3 are allowed.")
+
+        print(f"Saved audio to {output_path}")
