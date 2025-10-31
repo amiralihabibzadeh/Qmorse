@@ -6,7 +6,7 @@ long_description = (this_directory / "README.md").read_text(encoding="utf-8")
 
 setup(
     name="Qmorse",
-    version="1.1.19",
+    version="1.2.1",
     author="Hobab",
     author_email="b66669420@gmail.com",
     description="A lightweight Morse-like library for Python",
@@ -15,10 +15,6 @@ setup(
     url="https://github.com/amiralihabibzadeh/Qmorse",
     packages=find_packages(include=["Qmorse", "Qmorse.*"]),
     include_package_data=True,
-    install_requires=[ 
-        "pydub>=0.25.1",
-        "lameenc>=1.8.1",
-    ],
     extras_require={  
         "dev": [
             "pytest>=7.0.0",
@@ -29,12 +25,6 @@ setup(
             "twine>=4.0.0",
         ],
     },
-    package_data={"Qmorse": ["sounds/*.pcm"]},
-    classifiers=[
-        "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",
-        "Operating System :: OS Independent",
-    ],
     python_requires=">=3.7",
     keywords="morse binary encoding decoding python",
 )

@@ -26,7 +26,16 @@ class bimorse:
         '101111': ']','110101': '{','111001': '}','010111': '|',
         '011001': '<','011111': '>','100001': '~'
     }
+
+    bit_table = {
+    '0': '00',
+    '1': '01',
+    '.': '10',
+    '█': '11'
+    }
+
     encode = {v: k for k, v in translate.items()}
+    reverse_table = {v: k for k, v in bit_table.items()}
 
     @staticmethod
     def read_text(path):
@@ -50,12 +59,12 @@ class bimorse:
         return content
 
     @staticmethod
-    def read_bimorse(bimorse_path):
+    def read_bimorse(path):
         """
         Read a bimorse file and validate its content.
 
         Args:
-            bimorse_path (str): Path to a .bimorse file.
+            path (str): Path to a .bimorse file.
 
         Returns:
             str: Content of the bimorse file.
@@ -64,17 +73,18 @@ class bimorse:
             ValueError: If the file contains invalid characters.
             FileNotFoundError: If the file does not exist.
         """
-        if not bimorse_path.endswith('.bimorse'):
+        if not path.endswith('.bimorse'):
             raise ValueError('File is not bimorse')
-        try:
-            with open(bimorse_path, 'r', encoding='utf-8') as q:
-                content = q.read()
-        except FileNotFoundError:
-            raise FileNotFoundError(f'File at {bimorse_path} does not exist')
-        for ch in content:
-            if ch not in '01.':
-                raise ValueError('File contains characters other than 0, ., 1 — corrupted')
-        return content
+        with open(path, 'rb') as f:
+            data = f.read()
+        bits = ''.join(f'{byte:08b}' for byte in data)
+        decoded = ''
+
+        for i in range (0 , len(bits) , 2):
+            pair = bits[i:i+2]
+            if pair in bimorse.reverse_table:
+                decoded += bimorse.reverse_table[pair]
+        return decoded
     
     @staticmethod
     def to_bimorse(text):
@@ -104,6 +114,10 @@ class bimorse:
             if i < len(result) - 1:
                 if seq not in ['..','...','....'] and result[i+1] not in ['..','...','....']:
                     out.append('.')
+
+        out.insert(0,'█')
+        out.append('█')
+
         return ''.join(out)
 
     @staticmethod
@@ -118,9 +132,9 @@ class bimorse:
             str: Decoded normal text.
         """
         result = []
-        i = 0
+        i = 1
         seq = ''
-        while i < len(bimorse_content):
+        while i+1 < len(bimorse_content):
             if bimorse_content[i] in '01':
                 seq += bimorse_content[i]
                 i += 1
@@ -144,7 +158,7 @@ class bimorse:
         if seq:
             result.append(bimorse.translate.get(seq, '-un-'))
         return ''.join(result)
-        
+
     @staticmethod
     def save_file(var: str, filename: str) -> None:
         """
@@ -168,18 +182,55 @@ class bimorse:
             >>> bimorse.save_file('Hello', 'hello.bimorse')
             >>> bimorse.save_file('01.0.1', 'output.txt')
         """
-        var_type = 'bimorse' if all(ch in '01.' for ch in var) else 'text'
 
-        if var_type == 'bimorse' and filename.endswith('.bimorse'):
-            to_write = var
-        elif var_type == 'bimorse' and filename.endswith('.txt'):
-            to_write = bimorse.to_text(var)  
-        elif var_type == 'text' and filename.endswith('.bimorse'):
-            to_write = bimorse.to_bimorse(var) 
-        elif var_type == 'text' and filename.endswith('.txt'):
-            to_write = var
+        if var.startswith('█') and var.endswith('█'):
+            var_type = 'bimorse'
         else:
-            raise ValueError("File extension must be .txt or .bimorse")
+            var_type = 'text'
+        
+        if '.' not in filename:
+            file_type = 'bimorse'
+            filename = filename+ '.bimorse'
 
-        with open(filename, 'w', encoding='utf-8') as q:
-            q.write(to_write)
+        elif filename.endswith('.bimorse'):
+            file_type = 'bimorse'
+
+        elif filename.endswith('.txt'):
+
+            file_type = 'text'
+        else :
+            raise ValueError('File extension must be .txt or .bimorse')
+
+
+        if var_type == 'bimorse':
+
+            if file_type == 'bimorse':
+                bis = ''.join(bimorse.bit_table[c] for c in var)
+
+                if len(bis) %8 != 0:
+                    bis += '0' * (8 - len(bis)%8)
+
+                var = int(bis, 2).to_bytes(len(bis) // 8, byteorder ='big')
+
+            elif file_type == 'text':
+                var = bimorse.to_text(var)
+            
+        elif var_type == 'text':
+
+            if file_type == 'text':
+                pass
+
+            elif file_type == 'bimorse':
+                var = bimorse.to_bimorse(var)
+                bis = ''.join(bimorse.bit_table[c] for c in var)
+
+                if len(bis) %8 != 0:
+                    bis += '0' * (8 - len(bis)%8)
+
+                var = int(bis, 2).to_bytes(len(bis) // 8, byteorder ='big')
+
+        mode = 'wb' if isinstance(var, bytes) else 'w'
+        encoding = None if isinstance(var, bytes) else 'utf-8'
+
+        with open(filename, mode, encoding=encoding) as q:
+            q.write(var)

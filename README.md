@@ -12,7 +12,6 @@ Note that this library is made for real use of the morse code.
 - **Encoding and Decoding of the bimorse:** Encode standard text (letters, numbers, and basic punctuation) into a binary Morse representation.
 - **File Support:** Read/write binary Morse code to and from `.txt` files and save bimorse as `.bimorse` files.
 - **Easy Use:** Simple API designed for both beginners and advanced users.
-- **Audio Conversion:** Convert binary Morse sequences into listenable beeps (short/long tones) with customizable timing.
 
 ---
 
@@ -33,10 +32,8 @@ pip install .
 ## Usage Example
 ```bash
 from Qmorse import bimorse as bim
-from Qmorse import soundmorse as sm
 
 text = bim.to_bimorse('Cogito, ergo sum')
 bim.save_file(text,'Rene.txt')
 
-sm.bimorse_to_audio(input = text, output = Rene.wav )
 ```
