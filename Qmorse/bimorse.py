@@ -1,3 +1,5 @@
+import os
+
 class bimorse:
     """
     A class to encode and decode text into "bimorse" (a Morse-like binary encoding) 
@@ -50,13 +52,15 @@ class bimorse:
 
         Raises:
             ValueError: If the file does not end with '.txt'.
+            FileNotFoundError: If the file does not exist.
         """
-        if not path.endswith('.txt'):
+        if not path.lower().endswith('.txt'):
             raise ValueError('File is not text')
+        if not os.path.isfile(path):
+            raise FileNotFoundError(f"No such file: '{path}'")
+
         with open(path, 'r', encoding='utf-8') as q:
-            content = q.read()
-        content = content.replace('\r\n', '\n').replace('\r', '\n')
-        return content
+            return q.read().replace('\r\n', '\n').replace('\r', '\n')
 
     @staticmethod
     def read_bimorse(path):
@@ -73,8 +77,12 @@ class bimorse:
             ValueError: If the file contains invalid characters.
             FileNotFoundError: If the file does not exist.
         """
+        if not os.path.isfile(path):
+            raise FileNotFoundError(f"No such file: '{path}'")
+        
         if not path.endswith('.bimorse'):
             raise ValueError('File is not bimorse')
+        
         with open(path, 'rb') as f:
             data = f.read()
         bits = ''.join(f'{byte:08b}' for byte in data)
@@ -207,8 +215,10 @@ class bimorse:
             if file_type == 'bimorse':
                 bis = ''.join(bimorse.bit_table[c] for c in var)
 
-                if len(bis) %8 != 0:
-                    bis += '0' * (8 - len(bis)%8)
+                bit_length = len(bis)
+                num_bytes = (bit_length + 7) // 8
+                var = int(bis, 2).to_bytes(num_bytes, 'big')
+                var = bit_length.to_bytes(2, 'big') + var
 
                 var = int(bis, 2).to_bytes(len(bis) // 8, byteorder ='big')
 
@@ -224,8 +234,10 @@ class bimorse:
                 var = bimorse.to_bimorse(var)
                 bis = ''.join(bimorse.bit_table[c] for c in var)
 
-                if len(bis) %8 != 0:
-                    bis += '0' * (8 - len(bis)%8)
+                bit_length = len(bis)
+                num_bytes = (bit_length + 7) // 8
+                var = int(bis, 2).to_bytes(num_bytes, 'big')
+                var = bit_length.to_bytes(2, 'big') + var
 
                 var = int(bis, 2).to_bytes(len(bis) // 8, byteorder ='big')
 
