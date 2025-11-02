@@ -40,6 +40,21 @@ class bimorse:
     reverse_table = {v: k for k, v in bit_table.items()}
 
     @staticmethod
+    def bits_to_bytes(bitstring: str) -> bytes:
+        """Convert a '010011...' bitstring into bytes safely (no padding bits kept)."""
+        out = bytearray()
+        for i in range(0, len(bitstring), 8):
+            byte_chunk = bitstring[i:i+8]
+            out.append(int(byte_chunk.ljust(8, '0'), 2)) 
+        return bytes(out)
+
+    @staticmethod
+    def bytes_to_bits(data: bytes, bit_length: int) -> str:
+        """Convert bytes back to bitstring and trim to original bit length."""
+        bits = ''.join(f'{byte:08b}' for byte in data)
+        return bits[:bit_length]
+    
+    @staticmethod
     def read_text(path):
         """
         Read a text file and normalize line endings.
@@ -79,19 +94,24 @@ class bimorse:
         """
         if not os.path.isfile(path):
             raise FileNotFoundError(f"No such file: '{path}'")
-        
-        if not path.endswith('.bimorse'):
+        if not path.lower().endswith('.bimorse'):
             raise ValueError('File is not bimorse')
-        
+
         with open(path, 'rb') as f:
             data = f.read()
-        bits = ''.join(f'{byte:08b}' for byte in data)
-        decoded = ''
 
-        for i in range (0 , len(bits) , 2):
-            pair = bits[i:i+2]
-            if pair in bimorse.reverse_table:
-                decoded += bimorse.reverse_table[pair]
+        if len(data) < 2:
+            raise ValueError("Corrupted bimorse file (missing length header)")
+
+        bit_length = int.from_bytes(data[:2], 'big')
+        raw_data = data[2:]
+        bits = bimorse.bytes_to_bits(raw_data, bit_length)
+
+        decoded = ''.join(
+            bimorse.reverse_table[bits[i:i+2]]
+            for i in range(0, len(bits), 2)
+            if bits[i:i+2] in bimorse.reverse_table
+        )
         return decoded
     
     @staticmethod
@@ -214,13 +234,13 @@ class bimorse:
 
             if file_type == 'bimorse':
                 bis = ''.join(bimorse.bit_table[c] for c in var)
-
                 bit_length = len(bis)
-                num_bytes = (bit_length + 7) // 8
-                var = int(bis, 2).to_bytes(num_bytes, 'big')
+
+
+                var = bimorse.bits_to_bytes(bis)
+
                 var = bit_length.to_bytes(2, 'big') + var
 
-                var = int(bis, 2).to_bytes(len(bis) // 8, byteorder ='big')
 
             elif file_type == 'text':
                 var = bimorse.to_text(var)
@@ -233,16 +253,17 @@ class bimorse:
             elif file_type == 'bimorse':
                 var = bimorse.to_bimorse(var)
                 bis = ''.join(bimorse.bit_table[c] for c in var)
-
                 bit_length = len(bis)
-                num_bytes = (bit_length + 7) // 8
-                var = int(bis, 2).to_bytes(num_bytes, 'big')
+
+                var = bimorse.bits_to_bytes(bis)
+
                 var = bit_length.to_bytes(2, 'big') + var
 
-                var = int(bis, 2).to_bytes(len(bis) // 8, byteorder ='big')
 
         mode = 'wb' if isinstance(var, bytes) else 'w'
         encoding = None if isinstance(var, bytes) else 'utf-8'
 
         with open(filename, mode, encoding=encoding) as q:
             q.write(var)
+
+
