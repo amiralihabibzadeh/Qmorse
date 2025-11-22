@@ -6,7 +6,7 @@ long_description = (this_directory / "README.md").read_text(encoding="utf-8")
 
 setup(
     name="Qmorse",
-    version="2.0.1",
+    version="2.0.2",
     author="Hobab",
     author_email="b66669420@gmail.com",
     description="Binary Morse encoding and decoding for real-world signal use.",

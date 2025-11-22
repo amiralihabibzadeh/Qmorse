@@ -233,7 +233,7 @@ class bimorse:
         if var_type == 'bimorse':
 
             if file_type == 'bimorse':
-                bis = ''.join(bimorse.bit_table[c] for c in var)
+                bis = ''.join(bimorse.bit_table[c] for c in var if c in bimorse.bit_table)
                 bit_length = len(bis)
 
 
