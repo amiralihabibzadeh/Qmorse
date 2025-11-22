@@ -115,7 +115,7 @@ class bimorse:
         return decoded
     
     @staticmethod
-    def to_bimorse(text):
+    def txt2bi(text):
         """
         Convert normal text to bimorse encoding.
 
@@ -149,7 +149,7 @@ class bimorse:
         return ''.join(out)
 
     @staticmethod
-    def to_text(bimorse_content):
+    def bi2txt(bimorse_content):
         """
         Convert bimorse content back to normal text.
 
@@ -243,7 +243,7 @@ class bimorse:
 
 
             elif file_type == 'text':
-                var = bimorse.to_text(var)
+                var = bimorse.bi2txt(var)
             
         elif var_type == 'text':
 
@@ -251,7 +251,7 @@ class bimorse:
                 pass
 
             elif file_type == 'bimorse':
-                var = bimorse.to_bimorse(var)
+                var = bimorse.txt2bi(var)
                 bis = ''.join(bimorse.bit_table[c] for c in var)
                 bit_length = len(bis)
 

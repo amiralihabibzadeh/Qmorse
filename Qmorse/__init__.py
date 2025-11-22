@@ -1,4 +1,4 @@
 from .bimorse import bimorse
-#from .soundmorse import soundmorse
+from .vimorse import vimorse
 
-__all__ = ["bimorse"]
+__all__ = ["bimorse", "vimorse"]
